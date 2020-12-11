@@ -3,6 +3,9 @@ package pl.nullpointerexception.restapi.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import pl.nullpointerexception.restapi.model.Comment;
 import pl.nullpointerexception.restapi.model.Post;
 import org.springframework.stereotype.Service;
@@ -46,5 +49,22 @@ public class PostService {
     private List<Comment> extractComments(List<Comment> comments, long id) {
         return comments.stream()
                 .filter(comment -> comment.getPostId()==id).collect(Collectors.toList());
+    }
+
+    public Post addPost(Post post){
+        return postRepository.save(post);
+    }
+
+    @Transactional
+    public Post editPost(Post post) {
+        Post postEdited=postRepository.findById(post.getId()).orElseThrow();
+        postEdited.setTitle(post.getTitle());
+        postEdited.setContent(post.getContent());
+        return postRepository.save(post);
+    }
+
+
+    public void deletePost(long id) {
+        postRepository.deleteById(id);
     }
 }
